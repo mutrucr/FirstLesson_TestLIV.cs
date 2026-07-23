@@ -1,0 +1,66 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+class Program
+{
+    static double ReadPower(double current, double threshold)
+    {
+        if (current < threshold) return current * 0.01;
+        return (current - threshold) * 0.8;
+    }
+
+    static void Main()
+    {
+        double[] batch = { 20.0, 22.0, 35.0, 28.0, 19.5, 25.0, 31.0, 21.0 };
+
+        // TODO 1: declară două countere int, "passed" și "failed",
+        // ambele pornind de la zero
+        // (indiciu: le poți declara pe un singur rând, cu virgulă)
+        int passed = 0, failed = 0;
+
+
+        List<string> report = new List<string>();
+        report.Add("DiodeNr,Threshold_mA,Power_mW,Verdict");
+
+        int diodeNr = 1;
+
+        foreach (double threshold in batch)
+        {
+            // TODO 2: cheamă funcția ReadPower cu 50.0 și threshold,
+            // pune rezultatul într-o variabilă double numită "power"
+            double power = ReadPower(50.0, threshold);
+
+
+            // TODO 3: creează un bool "pass" care e true
+            // dacă power e mai mare sau egal cu 20.0
+
+            bool pass = power >= 20;
+
+
+            if (pass) passed++; else failed++;
+
+            report.Add($"{diodeNr},{threshold},{power:F1},{(pass ? "PASS" : "FAIL")}");
+            diodeNr++;
+        }
+
+        // TODO 4: calculează yield-ul în procente
+        // (atenție la capcana pe care ai prins-o singur în Lecția 3! 😈)
+        double yield = (double)passed / batch.Length * 100;
+
+
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm");
+
+        // TODO 5: construiește fileName-ul, dar de data asta
+        // vreau să înceapă cu "YieldReport_" în loc de "TestReport_"
+        string fileName = $"YieldReport_{timestamp}.csv";
+
+        report.Add("");
+        report.Add($"Total,{batch.Length},Passed,{passed},Failed,{failed},Yield,{yield:F1}%");
+
+        File.WriteAllLines(fileName, report);
+
+        Console.WriteLine($"Report saved: {fileName}");
+        Console.WriteLine($"Yield: {yield:F1}%");
+    }
+}
